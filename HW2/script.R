@@ -1,7 +1,7 @@
 # Download the data -------------------------------------------------------
 require(tseries, quietly = T)
 require(data.table)
-
+library(zoo)
 
 sp.list <- fread('SPlist.csv')
 sp.list$Sector <- as.factor(sp.list$Sector)
@@ -43,4 +43,13 @@ names(data) <- sector.names
 
 save(data, file='data.RData')
 
-load(file='data.RData')
+
+# Create data matrix ------------------------------------------------------
+
+X <- create_matrix(sectors, data)
+
+
+# Create MC graph ---------------------------------------------------------
+
+# create pearson correlation matrix
+R_hat <- cor(X,X)
