@@ -7,32 +7,6 @@ sp.list <- fread('SPlist.csv')
 sp.list$Sector <- as.factor(sp.list$Sector)
 sectors <- levels(sp.list$Sector)
 
-get_series <- function(sp.list, sector, n = 10) {
-  n_series <- list()
-  energy.symbols <- sp.list[sp.list$Sector == sector]$Symbol
-  
-  i <- 1
-  added <- 0
-  names.arr <- c()
-  while(added < n && i <= length(energy.symbols)){
-    result = tryCatch({
-      a_series <- suppressWarnings(
-        get.hist.quote(instrument = energy.symbols[i], start = '2003-01-01', end = '2008-01-01',
-                       quote = c('Close'), provider = 'yahoo', drop = T) )
-      if(start(a_series) == '2003-01-02' && end(a_series) == '2007-12-31') {
-        added <- added + 1
-        n_series[[added]] <- a_series
-        names.arr <- c(names.arr, energy.symbols[i])
-      }
-    }, error = function(e) {
-      print("error")
-    })
-    i <- i + 1
-  }
-  names(n_series) <- names.arr
-  return(n_series)
-}
-
 data <- list()
 sector.names <- c()
 for(i in 1:length(sectors)){
@@ -53,3 +27,7 @@ X <- create_matrix(sectors, data)
 
 # create pearson correlation matrix
 R_hat <- cor(X,X)
+conf_int <- bootstrap_procedure(X, R_hat = R_hat)
+
+edges <- as.numeric((conf_int[[1]] <= R_hat) & (R_hat <= conf_int[[2]]))
+
