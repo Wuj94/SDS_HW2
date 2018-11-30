@@ -12,7 +12,7 @@ create_matrix <- function(sectors, data) {
   return(X)
 }
 
-bootstrap_procedure <- function(X, R_hat, B = 1000, n = 400){
+bootstrap_procedure <- function(X, R_hat, B = 1000, n = 400, alpha = 0.05){
   delta_b <- c()
   for(i in 1:B){
     b_row_indices <- sample(1:nrow(X), n, replace = T)
@@ -22,7 +22,6 @@ bootstrap_procedure <- function(X, R_hat, B = 1000, n = 400){
   }
   
   F_hat <- ecdf(delta_b)
-  alpha <- 0.05
   t_alpha <- quantile(F_hat, 1-alpha)
   low_conf_int <- R_hat - t_alpha / sqrt(n)
   high_conf_int <- R_hat + t_alpha / sqrt(n)
