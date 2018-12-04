@@ -8,10 +8,10 @@ sp.list <- fread('SPlist.csv')
 sp.list$Sector <- as.factor(sp.list$Sector)
 sectors <- levels(sp.list$Sector)
 
-n_companies <- 5
+n_companies <- 3
 data <- list()
 sector.names <- c()
-for(i in 1:length(sectors)){
+for(i in 1:5){ # length(sectors)
   data[[i]] <- get_series(sp.list, sector = sectors[i], n = n_companies)
   sector.names <- c(sector.names, sectors[i])
 }
@@ -28,9 +28,8 @@ for(li in data){
 }
 
 X <- matrix()
-X <- create_matrix(sectors, data)
+X <- create_matrix(sectors[1:5], data)
 colnames(X) <- comp_name
-
 # Create MC graph ---------------------------------------------------------
 
 # create pearson correlation matrix
@@ -38,8 +37,8 @@ R_hat <- cor(X,X)
 
 conf_int <- bootstrap_procedure(X, R_hat = R_hat)
 
-epsilon <- .4
-edges <- ! (((conf_int[[1]] <= -epsilon) & (-epsilon <= conf_int[[2]])
+epsilon <- .1
+edges <-  (((conf_int[[1]] <= -epsilon) & (-epsilon <= conf_int[[2]])
    | (conf_int[[1]] <= epsilon) & (epsilon <= conf_int[[2]])))
 
 require(igraph)
