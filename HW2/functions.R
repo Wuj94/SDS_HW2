@@ -14,24 +14,36 @@ create_matrix <- function(sectors, data) {
 
 bootstrap_procedure <- function(X, R_hat, B = 1000, n = 400, alpha = 0.05){
   delta_b <- c()
-  D <- ncol(X)
   for(i in 1:B){
     b_row_indices <- sample(1:nrow(X), n, replace = T)
     b_sample <- X[b_row_indices, ]
     b_R_hat <- cor(b_sample, b_sample)
-    delta_b <- c(delta_b, sqrt(D) * max(abs(b_R_hat - R_hat)))
+    delta_b <- c(delta_b, sqrt(ncol(X)) * max(abs(b_R_hat - R_hat)))
   }
   
   F_hat <- ecdf(delta_b)
   t_alpha <- quantile(F_hat, 1-alpha)
-  low_conf_int <- R_hat - t_alpha / sqrt(D *(D-1) / 2) # put here D 
-  high_conf_int <- R_hat + t_alpha / sqrt(D *(D-1) / 2) 
+  low_conf_int <- R_hat - t_alpha / sqrt(ncol(X)) 
+  high_conf_int <- R_hat + t_alpha / sqrt(ncol(X)) 
   
   res <- list()
   res[[1]] <- low_conf_int
   res[[2]] <- high_conf_int
   return(res)
 }
+
+# plot graph
+plot.graph <- function(edges){
+  g <- graph_from_adjacency_matrix(adjmatrix = edges, mode = c('undirected'), diag = 0)
+  
+  colors = c("green", "blue", "orchid", "orange", "yellow", "red", "antiquewhite", "chartreuse4", "cyan4", "darkgoldenrod3", "khaki")
+  
+  layout <- layout.auto
+  
+  plot(g, vertex.size=25, layout=layout)
+  
+}
+
 
 
 # 1. get data
