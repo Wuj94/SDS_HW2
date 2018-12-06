@@ -33,12 +33,21 @@ bootstrap_procedure <- function(X, R_hat, B = 1000, n = 400, alpha = 0.05){
 }
 
 # plot graph
-plot.graph <- function(edges){
+plot.graph <- function(edges, nstock = 3, nsectors = 11 ){
   g <- graph_from_adjacency_matrix(adjmatrix = edges, mode = c('undirected'), diag = 0)
   
-  colors = c("green", "blue", "orchid", "orange", "yellow", "red", "antiquewhite", "chartreuse4", "cyan4", "darkgoldenrod3", "khaki")
+  colors = c("green", "blue", "orchid", "orange", "yellow", "antiquewhite",
+             "chartreuse4", "cyan4", "red", "darkgoldenrod3", "khaki")
   
   layout <- layout.auto
+  
+  V(g)[1:nstock]$color <- colors[1]
+  
+  for (i in 2:nsectors){
+      low <- (i-1)*nstock+1
+      up <- i*nstock
+      V(g)[low:up]$color <- colors[i]
+  }
   
   plot(g, vertex.size=25, layout=layout)
   
